@@ -162,8 +162,16 @@ assign s_axi_rresp = 2'b00;
 assign s_axi_rlast = PIPELINE_OUTPUT ? s_axi_rlast_pipe_reg : s_axi_rlast_reg;
 assign s_axi_rvalid = PIPELINE_OUTPUT ? s_axi_rvalid_pipe_reg : s_axi_rvalid_reg;
 
+integer fp;
+integer file_size;
+integer res;
 integer i, j;
-parameter mem_init_file_int = FILE;
+localparam mem_init_file_int = FILE;
+
+// file seek parameters
+localparam SEEK_SET = 0;
+localparam SEEK_CUR = 1;
+localparam SEEK_END = 2;
 
 initial begin
     // two nested loops for smaller number of iterations per loop
@@ -173,8 +181,21 @@ initial begin
             mem[j] = 0;
         end
     end
-    if(mem_init_file_int != "none")
-      $readmemh(mem_init_file_int, mem);
+    if (mem_init_file_int != "none") begin
+       fp = $fopen(mem_init_file_int,"r");
+
+       // get file size
+       res = $fseek(fp, 0, SEEK_END);
+       file_size = $ftell(fp);
+       res = $rewind(fp);
+
+       // read file into mem
+       for (i=0; i < file_size; i=i+1) begin
+          res = $fscanf(fp, "%h", mem[i]);
+       end
+
+       $fclose(fp);
+    end
 end
 
 always @* begin
