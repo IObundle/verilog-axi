@@ -1,8 +1,8 @@
-from iob_core import iob_core
+def setup(py_params_dict):
+    attributes_dict = {
+        "original_name": "axi_interconnect",
+        "name": "axi_interconnect",
+        "version": "0.1",
+    }
 
-
-class axi_interconnect(iob_core):
-    def __init__(self, *args, **kwargs):
-        self.set_default_attribute("version", "0.1")
-
-        super().__init__(*args, **kwargs)
+    return attributes_dict
